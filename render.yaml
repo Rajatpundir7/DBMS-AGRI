@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: kisan-sewa-kendra-backend
+    env: node
+    plan: free
+    region: oregon
+    branch: main
+    root: backend
+    buildCommand: npm install
+    startCommand: npm run start
+    autoDeploy: true
+    envVars:
+      - key: MONGODB_URI
+        value: ''
+      - key: MANDI_API_KEY
+        value: ''
