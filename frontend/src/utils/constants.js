@@ -7,7 +7,7 @@ export const API_URL =
   process.env.REACT_APP_API_URL ||
   (typeof window !== "undefined" && window.location.hostname.includes("vercel.app")
     ? "/api"
-    : "http://localhost:5000/api");
+    : "https://dbms-agri.onrender.com/api");
 
 // Default map location
 export const DEFAULT_MAP_CENTER = [28.7041, 77.1025];
@@ -17,8 +17,8 @@ export const DEFAULT_MAP_ZOOM = 10;
 export const IMAGE_BASE_URL =
   process.env.REACT_APP_IMAGE_BASE_URL ||
   (typeof window !== "undefined" && window.location.hostname.includes("vercel.app")
-    ? ""
-    : "http://localhost:5000");
+    ? "https://dbms-agri.onrender.com"
+    : "https://dbms-agri.onrender.com");
 
 // App configuration
 export const APP_NAME = "Kisan Sewa Kendra";
