@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import { FiSearch, FiFilter } from 'react-icons/fi';
 import { IMAGE_BASE_URL } from '../utils/constants';
+import pesticideImages from '../data/pesticideImages';
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -21,7 +22,23 @@ const Products = () => {
       const params = { ...filters, page, limit: 20 };
       Object.keys(params).forEach(key => !params[key] && delete params[key]);
       const response = await api.get('/products', { params });
-      setProducts(response.data.products || []);
+      const raw = response.data.products || [];
+      // Assign pesticide images in ascending order for products without images
+      const pesticideCategories = new Set(['insecticide', 'fungicide', 'herbicide', 'growth-regulator', 'pesticide']);
+      let pIndex = 0;
+      const augmented = raw.map(p => {
+        const copy = { ...p };
+        if ((!copy.image || copy.image === '') && pesticideCategories.has((copy.category || '').toLowerCase())) {
+          // find next non-empty pesticide image
+          while (pIndex < pesticideImages.length && !pesticideImages[pIndex]) pIndex += 1;
+          if (pIndex < pesticideImages.length) {
+            copy.image = pesticideImages[pIndex];
+            pIndex += 1;
+          }
+        }
+        return copy;
+      });
+      setProducts(augmented);
       setTotalPages(response.data.pages || 1);
     } catch (error) {
       console.error('Error fetching products:', error);

@@ -4,6 +4,7 @@ import api from '../utils/api';
 import { toast } from 'react-toastify';
 import { FiShoppingCart } from 'react-icons/fi';
 import { IMAGE_BASE_URL } from '../utils/constants';
+import pesticideImages from '../data/pesticideImages';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -17,7 +18,22 @@ const ProductDetail = () => {
   const fetchProduct = async () => {
     try {
       const response = await api.get(`/products/${id}`);
-      setProduct(response.data);
+      let prod = response.data;
+      const pesticideCategories = new Set(['insecticide', 'fungicide', 'herbicide', 'growth-regulator', 'pesticide']);
+      if ((!prod.image || prod.image === '') && pesticideCategories.has((prod.category || '').toLowerCase())) {
+        // deterministic pick based on _id
+        const idStr = prod._id || prod.id || prod.title || '';
+        let sum = 0; for (let i = 0; i < idStr.length; i++) sum += idStr.charCodeAt(i);
+        let idx = sum % pesticideImages.length;
+        // if chosen index is empty, find next non-empty
+        let attempts = 0;
+        while ((!pesticideImages[idx] || pesticideImages[idx] === '') && attempts < pesticideImages.length) {
+          idx = (idx + 1) % pesticideImages.length;
+          attempts += 1;
+        }
+        if (pesticideImages[idx]) prod.image = pesticideImages[idx];
+      }
+      setProduct(prod);
     } catch (error) {
       toast.error('Failed to load product');
     } finally {
